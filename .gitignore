@@ -335,3 +335,9 @@ ASALocalRun/
 
 # MFractors (Xamarin productivity tool) working folder 
 .mfractor/
+/appsettings.json
+/bin/Debug/net8.0/appsettings.json
+/obj/Debug/net8.0/MatchBetting.csproj.AssemblyReference.cache
+/obj/Debug/net8.0/MatchBetting.csproj.CoreCompileInputs.cache
+/obj/MatchBetting.csproj.nuget.g.props
+/Properties/ServiceDependencies/EM24 - Web Deploy/profile.arm.json
