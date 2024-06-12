@@ -12,6 +12,7 @@ using MatchBetting.Data;
 using MatchBetting.Models;
 using static MatchBetting.NifsModels.MatchModel;
 using Result = MatchBetting.NifsModels.Result;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace MatchBetting.Controllers
 {
@@ -205,6 +206,48 @@ namespace MatchBetting.Controllers
         }
 
         [HttpPost]
+        
+        public async Task<IActionResult> UpdateSideBets(SideBettingMinViewModel sideBet)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                    var sidebet = _context.SideBettings.FirstOrDefault(m => m.UserId == userId);
+                    if (sidebet == null) {
+                        sidebet = new SideBet()
+                        {
+                            Toppscorer = sideBet.Toppscorer,
+                            WinnerTeam = sideBet.WinnerTeam,
+                            MostCards = sideBet.MostCards,
+                            UserId = userId
+                        };
+                        _context.SideBettings.Add(sidebet);
+                    }
+                    else
+                    {
+                        sidebet.Toppscorer = sideBet.Toppscorer;
+                        sidebet.WinnerTeam = sideBet.WinnerTeam;
+                        sidebet.MostCards = sideBet.MostCards;
+                        sidebet.UserId = userId;
+                        _context.SideBettings.Update(sidebet);
+                    }
+                    
+                    await _context.SaveChangesAsync();
+                    return Json(new { Success = true, Message = $"Successfully stored sidebettings for user {userId}" });
+                }
+                catch (Exception ex)
+                {
+                    // Log the exception if needed
+                    return Json(new { Success = false, Message = $"Failed to store sidebettings. Error: {ex.Message}" });
+                }
+            }
+            return Json(new { Success = false, Message = $"Failed to store sidebettings. Error: modelstate failed" });
+        }
+
+
+        [HttpPost]
         public async Task<IActionResult> RemoveStorage(int matchId)
         {
             try
@@ -245,6 +288,31 @@ namespace MatchBetting.Controllers
             {
                 // Log the exception if needed
                 return Json(new { Success = false, Message = $"Failed to get bettings. Error: {ex.Message}" });
+            }
+        }
+        public IActionResult GetCurrentUserSideBettings()
+        {
+            try
+            {
+                // Get the logged-in user's ID
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                // Create a new MatchBetting entity
+                
+                var sideBettings = _context.SideBettings.FirstOrDefault(m => m.UserId == userId);
+                if(sideBettings == null)
+                {
+                    sideBettings = new SideBet();
+                    sideBettings.UserId = userId;
+                }
+                var sideBet = new SideBettingViewModel(sideBettings);
+                
+                return Json(new { Success = true, SideBettings = sideBet });
+            }
+            catch (Exception ex)
+            {
+                // Log the exception if needed
+                return Json(new { Success = false, Message = $"Failed to get sidebettings. Error: {ex.Message}" });
             }
         }
     }
