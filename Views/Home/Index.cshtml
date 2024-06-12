@@ -130,7 +130,7 @@
             $.ajax({
                 method: "POST",
                 url: "/Home/UpdateStorage",
-                data: { id: id, result: value }
+                data: { matchId: id, result: value }
             })
                 .done(function (result) {
                     if (result.Success) {
