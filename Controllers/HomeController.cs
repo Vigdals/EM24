@@ -162,22 +162,31 @@ namespace MatchBetting.Controllers
         /// 
 
         [HttpPost]
-        public async Task<IActionResult> UpdateStorage(int id, string result)
+        public async Task<IActionResult> UpdateStorage(int matchId, string result)
         {
+            var now = DateTime.Now;
+
             try
             {
                 // Get the logged-in user's ID
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-                //Check if a bet has been made on actual match
-                var match = _context.MatchBettings.FirstOrDefault(m => m.UserId == userId && m.MatchId == id);
+                // Get the match object from DB
+                var match = _context.Matches.FirstOrDefault(m => m.MatchId == matchId);
 
-                if (match != null) await RemoveStorage(match.MatchId);
+                // Check if the match timespan is valid
+                if (match == null || now.AddHours(2) > match.Timestamp) throw new Exception("Cannot bet on this match when starting time is less than two hours from now");
+
+                //Check if a bet has been made on actual match
+                var dbMatchBetting = _context.MatchBettings.FirstOrDefault(m => m.UserId == userId && m.MatchId == matchId);
+
+                // The user has clicked on an checked checkbox to remove bet
+                if (dbMatchBetting != null) await RemoveStorage(dbMatchBetting.MatchId);
 
                 // Create a new MatchBetting entity
                 var matchBetting = new Models.MatchBetting
                 {
-                    MatchId = id,
+                    MatchId = matchId,
                     Result = result,
                     UserId = userId
                 };
@@ -186,17 +195,17 @@ namespace MatchBetting.Controllers
                 _context.MatchBettings.Add(matchBetting);
                 await _context.SaveChangesAsync();
 
-                return Json(new { Success = true, Message = $"Successfully stored match id {id} with result {result} for user {userId}" });
+                return Json(new { Success = true, Message = $"Successfully stored match id {matchId} with result {result} for user {userId}" });
             }
             catch (Exception ex)
             {
                 // Log the exception if needed
-                return Json(new { Success = false, Message = $"Failed to store match id {id} with result {result}. Error: {ex.Message}" });
+                return Json(new { Success = false, Message = $"Failed to store match id {matchId} with result {result}. Error: {ex.Message}" });
             }
         }
 
         [HttpPost]
-        public async Task<IActionResult> RemoveStorage(int id)
+        public async Task<IActionResult> RemoveStorage(int matchId)
         {
             try
             {
@@ -205,18 +214,18 @@ namespace MatchBetting.Controllers
 
                 // Get the betting
 
-                var matchBetting = _context.MatchBettings.FirstOrDefault(m => m.UserId == userId && m.MatchId == id);
+                var matchBetting = _context.MatchBettings.FirstOrDefault(m => m.UserId == userId && m.MatchId == matchId);
 
                 // Remove the MatchBetting entity to the context and save changes
                 _context.MatchBettings.Remove(matchBetting);
                 await _context.SaveChangesAsync();
 
-                return Json(new { Success = true, Message = $"Successfully removed match id {id} for user {userId}" });
+                return Json(new { Success = true, Message = $"Successfully removed match id {matchId} for user {userId}" });
             }
             catch (Exception ex)
             {
                 // Log the exception if needed
-                return Json(new { Success = false, Message = $"Failed to remove match id {id}. Error: {ex.Message}" });
+                return Json(new { Success = false, Message = $"Failed to remove match id {matchId}. Error: {ex.Message}" });
             }
         }
 
