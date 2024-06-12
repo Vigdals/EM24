@@ -34,7 +34,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach (var item in Model.Where(m => m.round == round && m.gruppe != "sluttspill"))
+                                @foreach (var item in Model.Where(m => m.round == round && m.gruppe != "sluttspill").OrderBy(o => o.date))
                                 {
                                     var active = "disabled";
                                     if (item.date.AddHours(-2) >= now) active = "";
