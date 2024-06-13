@@ -64,7 +64,7 @@ namespace MatchBetting.Controllers
 
             return View(matchViewModelList);
         }
-
+        [Authorize]
         public IActionResult Rules()
         {
             return View();
@@ -213,7 +213,7 @@ namespace MatchBetting.Controllers
         
         public async Task<IActionResult> UpdateSideBets(SideBettingMinViewModel sideBet)
         {
-            if (ModelState.IsValid)
+            if (true)
             {
                 try
                 {
