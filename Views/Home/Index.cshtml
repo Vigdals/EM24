@@ -80,7 +80,7 @@
                     </div>
                 }
 
-                <h3>Sluttspill</h3>
+                @* <h3>Sluttspill</h3>
                 <div class="table-responsive">
                     <table class="table table-striped table-hover table-bordered">
                         <thead>
@@ -109,7 +109,7 @@
                             }
                         </tbody>
                     </table>
-                </div>
+                </div> *@
             }
         </div>
         <!-- Right Logo Column -->
@@ -120,12 +120,11 @@
     <h4>SideBet</h4>
     <hr />
     @{
-        var deadline = new DateTime(2024, 04, 14, 19, 00, 00);
+        var deadline = new DateTime(2024, 06, 14, 19, 00, 00);
         var disabled = DateTime.Now > deadline ? "disabled":"";
      }
     <div class="row">
         <div class="col-md-4">
-            
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <input type="hidden" asp-for="Id" />
                 <div class="form-group">
@@ -144,6 +143,9 @@
                     <span asp-validation-for="WinnerTeam" class="text-danger"></span>
                 </div>
                 <input type="hidden" name="userId" id="UserId"/>
+                <div class="spinner-border" role="status" id="loadingDiv">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
                 <div class="form-group">
                     @if (string.IsNullOrWhiteSpace(disabled)){ <text> <input type="submit" value="Save" class="btn btn-primary" id="SideBetButton"/></text>}
                 </div>
@@ -165,6 +167,14 @@
             });
         });
 
+        $(document)
+            .ajaxStart(function () {
+                $('#loadingDiv').show();
+            })
+            .ajaxStop(function () {
+                $('#loadingDiv').hide();
+            });
+
         function UpdateStorage(id, value) {
             $.ajax({
                 method: "POST",
@@ -182,6 +192,8 @@
                 });
         }
 
+
+
         function UpdateSideBets() {
             $.ajax({
                 method: "POST",
@@ -194,6 +206,7 @@
             })
                 .done(function (result) {
                     if (result.Success) {
+                        //legg inn popup eller toltip her?
                         console.log(result.message);
                     }
                     else console.log(result.message);
