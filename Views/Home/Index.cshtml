@@ -143,13 +143,13 @@
                     <span asp-validation-for="WinnerTeam" class="text-danger"></span>
                 </div>
                 <input type="hidden" name="userId" id="UserId"/>
-                <div class="spinner-border" role="status" id="loadingDiv">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
+                <br />
+            <div class="spinner-border" role="status" id="loadingDiv">
+                <span class="visually-hidden">Loading...</span>
+            </div>
                 <div class="form-group">
-                    @if (string.IsNullOrWhiteSpace(disabled)){ <text> <input type="submit" value="Save" class="btn btn-primary" id="SideBetButton"/></text>}
+                    @if (string.IsNullOrWhiteSpace(disabled)){ <text> <input type="submit" value="Lagre sidebet!" class="btn btn-primary" id="SideBetButton"/></text>}
                 </div>
-            
         </div>
     </div>
 </div>

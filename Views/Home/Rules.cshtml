@@ -1,17 +1,30 @@
-﻿<div class="container">
+﻿@{
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<div class="container text-center">
     <div class="row">
         <!-- Left Logo -->
         <div class="col-md-2 text-center">
             <img src="~/img/uefa_euro_2024_logo.svg.png" alt="UEFA EURO 2024 Logo" class="img-fluid" style="max-width: 100px; height: auto;" />
         </div>
         <!-- Content Column -->
-        <h1>Reglar</h1>
-            1 poeng for  rett HUB pr kamp
-            3 poeng for rett toppscorer
-            3 poeng for flest kort(gult=1,raudt =2)
-            3 poeng for rett vinner av EM
-            1000 kr innsats,  vinneren får alt. Ved lik poengsum deles potten.
-            Vipps Bjørn Tore Årøy 41108550
+        <div class="col-md-5">
+            <h3 class="display-5">Reglar</h3>
+            <ul class="list-unstyled mt-3">
+                <li>Tipping på kampar kan endrast fram til 2t før kampstart. </li>
+                <li>Sidebets (toppscorar, flest kort og vinnarlag) må tippast på før fredag kl 19:00!</li>
+                <li>Ein kan endre på tippinga si til ein kvar tid før fristen går ut.</li>
+                <br />
+                <li><strong>Poengdeling:</strong></li>
+                <li>1 poeng for rett HUB pr kamp</li>
+                <li>3 poeng for rett toppscorer</li>
+                <li>3 poeng for flest kort (gult=1, raudt =2)</li>
+                <li>3 poeng for rett vinner av EM</li>
+                <li>1000 kr innsats, vinneren får alt. Ved lik poengsum deles potten.</li>
+                <li>Vipps Bjørn Tore Årøy 41108550</li>
+            </ul>
+        </div>
         <!-- Right Logo -->
         <div class="col-md-2 text-center">
             <img src="~/img/uefa_euro_2024_logo.svg.png" alt="UEFA EURO 2024 Logo" class="img-fluid" style="max-width: 100px; height: auto;" />
@@ -19,5 +32,4 @@
     </div>
 </div>
 
-
-
+<partial name="_ValidationScriptsPartial" />
