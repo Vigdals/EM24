@@ -65,6 +65,10 @@ namespace MatchBetting.Controllers
             return View(matchViewModelList);
         }
 
+        public IActionResult Rules()
+        {
+            return View();
+        }
         private async void AddOrUpdateMatchInDatabase(NifsKampModel match)
         {
             try
