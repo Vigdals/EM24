@@ -64,11 +64,46 @@ namespace MatchBetting.Controllers
 
             return View(matchViewModelList);
         }
+
         [Authorize]
         public IActionResult Rules()
         {
             return View();
         }
+
+        [Authorize]
+        public IActionResult LeaderBoard()
+        {
+            var users = _context.Set<IdentityUser>().ToList()
+                .Select(user => new UserViewModel
+                {
+                    UserId = user.Id,
+                    UserName = user.UserName,
+                    Score = CalculatePoints(user.Id)
+                }).ToList();
+
+            return View(users);
+        }
+
+        private int CalculatePoints(string userId)
+        {
+            var score = 0;
+            var bets = _context.MatchBettings.Where(mb => mb.UserId == userId).ToList();
+            var matchesWithResults = _context.Matches.Where(m => m.Result != string.Empty && DateTime.Now >= m.Timestamp).ToList();
+
+            foreach (var match in matchesWithResults)
+            {
+                var bettingOnActualMatch = bets.FirstOrDefault(b => b.MatchId == match.MatchId);
+                if (bettingOnActualMatch != null)
+                {
+                    score += bettingOnActualMatch.Result == match.Result ? 1 : 0;
+                }
+            }
+
+            return score;
+        }
+
+
         private async void AddOrUpdateMatchInDatabase(NifsKampModel match)
         {
             try
