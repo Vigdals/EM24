@@ -213,8 +213,8 @@ namespace MatchBetting.Controllers
         
         public async Task<IActionResult> UpdateSideBets(SideBettingMinViewModel sideBet)
         {
-            if (true)
-            {
+            if (sideBet.MostCards == null) sideBet.MostCards = string.Empty;
+
                 try
                 {
                     var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -246,8 +246,6 @@ namespace MatchBetting.Controllers
                     // Log the exception if needed
                     return Json(new { Success = false, Message = $"Failed to store sidebettings. Error: {ex.Message}" });
                 }
-            }
-            return Json(new { Success = false, Message = $"Failed to store sidebettings. Error: modelstate failed" });
         }
 
 

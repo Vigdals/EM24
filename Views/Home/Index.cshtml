@@ -53,6 +53,18 @@
                                             $(".chb_@item.id").change(function () {
                                                 // If this checkbox is being checked, uncheck all others
                                                 if ($(this).prop('checked')) {
+
+                                                    var td = $(this).closest('td');
+                                                    if (!td.hasClass("fade-green")) {
+                                                        td.addClass("fade-green");
+
+                                                        // Remove the class after the transition to fade back to original state
+                                                        setTimeout(function () {
+                                                            td.addClass("removed");  // Add class to transition to transparent
+                                                        }, 5000); // Match the timeout with the transition duration
+                                                    }
+
+
                                                     $(".chb_@item.id").prop('checked', false);
                                                     $(this).prop('checked', true);
 
@@ -129,24 +141,25 @@
                 <input type="hidden" asp-for="Id" />
                 <div class="form-group">
                     <label asp-for="Toppscorer" class="control-label">Toppscorar</label>
-                <input asp-for="Toppscorer" class="form-control" id="Toppscorer" @disabled />
+                <input asp-for="Toppscorer" class="form-control input_sidebet" id="Toppscorer" @disabled />
                     <span asp-validation-for="Toppscorer" class="text-danger"></span>
                 </div>
                 <div class="form-group">
                     <label asp-for="MostCards" class="control-label">Flest gule kort</label>
-                <input asp-for="MostCards" class="form-control" id="Mostcards" @disabled />
+                <input asp-for="MostCards" class="form-control input_sidebet" id="Mostcards" @disabled />
                     <span asp-validation-for="MostCards" class="text-danger"></span>
                 </div>
                 <div class="form-group">
                     <label asp-for="WinnerTeam" class="control-label">Vinnarlag</label>
-                    <input asp-for="WinnerTeam" class="form-control" id="Winnerteam" @disabled/>
+                <input asp-for="WinnerTeam" class="form-control input_sidebet" id="Winnerteam" @disabled />
                     <span asp-validation-for="WinnerTeam" class="text-danger"></span>
                 </div>
                 <input type="hidden" name="userId" id="UserId"/>
                 <br />
-            <div class="spinner-border" role="status" id="loadingDiv">
-                <span class="visually-hidden">Loading...</span>
-            </div>
+                <div class="spinner-border" role="status" id="loadingDiv">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <div class="form-group"></div>
                 <div class="form-group">
                     @if (string.IsNullOrWhiteSpace(disabled)){ <text> <input type="submit" value="Lagre sidebet!" class="btn btn-primary" id="SideBetButton"/></text>}
                 </div>
@@ -182,7 +195,7 @@
                 data: { matchId: id, result: value }
             })
                 .done(function (result) {
-                    if (result.Success) {
+                    if (result.success) {
                         console.log(result.message);
                     }
                     else console.log(result.message);
@@ -205,9 +218,27 @@
                     }
             })
                 .done(function (result) {
-                    if (result.Success) {
+                    if (result.success) {
                         //legg inn popup eller toltip her?
                         console.log(result.message);
+
+                        var td = $('.input_sidebet');
+                        if (!td.hasClass("fade-green")) {
+                            td.addClass("fade-green");
+
+                            // Remove the class after the transition to fade back to original state
+                            setTimeout(function () {
+                                td.addClass("removed");  // Add class to transition to transparent
+                            }, 5000); // Match the timeout with the transition duration
+                        }
+                        else if (td.hasClass("removed")) {
+                                td.removeClass("removed");
+
+                                // Remove the class after the transition to fade back to original state
+                                setTimeout(function () {
+                                    td.addClass("removed");  // Add class to transition to transparent
+                                }, 5000); // Match the timeout with the transition duration
+                        }
                     }
                     else console.log(result.message);
                 })
@@ -223,7 +254,7 @@
                 data: { id: id }
             })
                 .done(function (result) {
-                    if (result.Success) {
+                    if (result.success) {
                         console.log(result.message);
                     }
                     else console.log(result.message);

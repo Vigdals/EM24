@@ -51,6 +51,16 @@ body {
     margin: 10px;
 }
 
-.table .center{
+.table .center {
     text-align: center;
 }
+
+/* Storage transitions*/
+.table .fade-green, input.form-control.input_sidebet.fade-green {
+    background-color: #D9FBCB;
+    transition: background-color 2s ease;
+}
+
+    .table .fade-green.removed, input.form-control.input_sidebet.fade-green.removed {
+        background-color: transparent;
+    }
