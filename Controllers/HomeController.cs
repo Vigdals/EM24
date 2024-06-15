@@ -112,13 +112,13 @@ namespace MatchBetting.Controllers
             var now = GetServerDateTimeNow();
             
             // Override for test
-            now = DateTime.Now.Date;
+            //now = DateTime.Now.Date.AddDays(1).AddHours(2).AddSeconds(-1);
 
             var twoHoursAgo = now.AddHours(-2);
             var midnightTonight = now.Date.AddDays(1);
 
             var matches = _context.Matches
-                .Where(m => m.Timestamp >= twoHoursAgo && m.Timestamp < midnightTonight)
+                .Where(m => now >= m.Timestamp.AddHours(-2) && now <= m.Timestamp.Date.AddDays(1))
                 .ToList();
 
             return matches;
