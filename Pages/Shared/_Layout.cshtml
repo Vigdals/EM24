@@ -48,7 +48,12 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2024 - MatchBetting - <a asp-area="" asp-page="/Privacy">Privacy</a>
+            @{
+                TimeZoneInfo osloTimeZone = TimeZoneInfo.FindSystemTimeZoneById("W. Europe Standard Time");
+                var utcNow = DateTime.UtcNow;
+                var now = TimeZoneInfo.ConvertTimeFromUtc(utcNow, osloTimeZone);
+            }
+            &copy; @now - MatchBetting - <a asp-area="" asp-page="/Privacy">Privacy</a>
         </div>
     </footer>
 

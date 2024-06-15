@@ -87,9 +87,12 @@ namespace MatchBetting.Controllers
 
         private int CalculatePoints(string userId)
         {
+            TimeZoneInfo osloTimeZone = TimeZoneInfo.FindSystemTimeZoneById("W. Europe Standard Time");
+            var utcNow = DateTime.UtcNow;
+            var now = TimeZoneInfo.ConvertTimeFromUtc(utcNow, osloTimeZone);
             var score = 0;
             var bets = _context.MatchBettings.Where(mb => mb.UserId == userId).ToList();
-            var matchesWithResults = _context.Matches.Where(m => m.Result != string.Empty && DateTime.Now >= m.Timestamp).ToList();
+            var matchesWithResults = _context.Matches.Where(m => m.Result != string.Empty && now >= m.Timestamp).ToList();
 
             foreach (var match in matchesWithResults)
             {
