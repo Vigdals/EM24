@@ -74,22 +74,62 @@ namespace MatchBetting.Controllers
         [Authorize]
         public IActionResult LeaderBoard()
         {
+            var currentMatches = GetMatchesWithinTimeRange();
+
             var users = _context.Set<IdentityUser>().ToList()
-                .Select(user => new UserViewModel
+                .Select(user => new LeaderBoardByUserViewModel
                 {
                     UserId = user.Id,
                     UserName = user.UserName,
-                    Score = CalculatePoints(user.Id)
+                    Score = CalculatePoints(user.Id),
+                    CurrentBettings = GetCurrentUserCurrentBettings(user.Id, currentMatches)
                 }).ToList();
+
+            ViewBag.CurrentMatches = currentMatches;
 
             return View(users);
         }
 
+        private List<MatchBettingViewModel> GetCurrentUserCurrentBettings(string userId, List<Match> currentMatches)
+        {
+            List<MatchBettingViewModel> matchBettings = new List<MatchBettingViewModel>();
+
+            foreach (var match in currentMatches)
+            {
+                var betting = _context.MatchBettings.FirstOrDefault(m => m.UserId == userId && m.MatchId == match.MatchId);
+                if (betting != null) matchBettings.Add(new MatchBettingViewModel(betting));
+                else matchBettings.Add(new MatchBettingViewModel(match, userId) {});
+            }
+
+            return matchBettings;
+
+            //return currentMatches.Select(m => new MatchBettingViewModel(_context.MatchBettings.FirstOrDefault(mb => mb.UserId == userId && mb.MatchId == m.MatchId))).ToList();
+        }
+
+
+        public List<Match> GetMatchesWithinTimeRange()
+        {
+            var now = GetServerDateTimeNow();
+            
+            // Override for test
+            now = DateTime.Now.Date;
+
+            var twoHoursAgo = now.AddHours(-2);
+            var midnightTonight = now.Date.AddDays(1);
+
+            var matches = _context.Matches
+                .Where(m => m.Timestamp >= twoHoursAgo && m.Timestamp < midnightTonight)
+                .ToList();
+
+            return matches;
+        }
+
         private int CalculatePoints(string userId)
         {
+            var now = GetServerDateTimeNow();
             var score = 0;
             var bets = _context.MatchBettings.Where(mb => mb.UserId == userId).ToList();
-            var matchesWithResults = _context.Matches.Where(m => m.Result != string.Empty && DateTime.Now >= m.Timestamp).ToList();
+            var matchesWithResults = _context.Matches.Where(m => m.Result != string.Empty && now >= m.Timestamp).ToList();
 
             foreach (var match in matchesWithResults)
             {
@@ -101,6 +141,13 @@ namespace MatchBetting.Controllers
             }
 
             return score;
+        }
+
+        private DateTime GetServerDateTimeNow()
+        {
+            var osloTimeZone = TimeZoneInfo.FindSystemTimeZoneById("W. Europe Standard Time");
+            var utcNow = DateTime.UtcNow;
+            return TimeZoneInfo.ConvertTimeFromUtc(utcNow, osloTimeZone);
         }
 
 

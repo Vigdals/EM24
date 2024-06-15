@@ -7,4 +7,14 @@
 
         public int Score { get; set; }
     }
+
+    public class LeaderBoardByUserViewModel : UserViewModel
+    {
+        public LeaderBoardByUserViewModel()
+        {
+            CurrentBettings = new List<MatchBettingViewModel>();
+        }
+
+        public List<MatchBettingViewModel> CurrentBettings { get; set; }
+    }
 }

@@ -1,6 +1,8 @@
-﻿@model List<MatchBetting.ViewModels.UserViewModel>?
+﻿@using MatchBetting.Models
+@model List<global::MatchBetting.ViewModels.LeaderBoardByUserViewModel>?
 @{
     Layout = "~/Pages/Shared/_Layout.cshtml";
+    var currentMatches = ViewBag.CurrentMatches;
 }
 
 <div class="container">
@@ -12,27 +14,34 @@
         <div class="col-md-6">
             @if (Model != null)
             {
-                    <div class="table-responsive">
-                        <table class="table table-striped table-hover table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>Deltakar</th>
-                                    <th>Poeng</th>
-                                <th>Neste kamp</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var user in Model.OrderByDescending(o => o.Score))
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover table-bordered">
+                        <thead>
+                        <tr>
+                            <th>Deltakar</th>
+                            <th>Poeng</th>
+                            @foreach (var match in (List<Match>)ViewBag.CurrentMatches)
+                            {
+                                <th title ="@match.MatchId">@match.HomeTeam - @match.AwayTeam</th>
+                            }
+
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var user in Model.OrderByDescending(o => o.Score))
+                        {
+                            <tr>
+                                <td>@user.UserName</td>
+                                <td>@user.Score</td>
+                                @foreach (var betting in user.CurrentBettings)
                                 {
-                                    <tr>
-                                        <td>@user.UserName</td>
-                                        <td>@user.Score</td>
-                                        <td>H</td>
-                                    </tr>
+                                    <td title="@betting.MatchId">@betting.Result</td>
                                 }
-                            </tbody>
-                        </table>
-                    </div>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
             }
         </div>
         <!-- Right Logo Column -->

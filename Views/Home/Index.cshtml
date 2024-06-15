@@ -4,7 +4,9 @@
 @{
     Layout = "~/Pages/Shared/_Layout.cshtml";
     var rounds = Model.Select(m => m.round).Distinct();
-    var now = DateTime.Now;
+    TimeZoneInfo osloTimeZone = TimeZoneInfo.FindSystemTimeZoneById("W. Europe Standard Time");
+    var utcNow = DateTime.UtcNow;
+    var now = TimeZoneInfo.ConvertTimeFromUtc(utcNow, osloTimeZone);
 }
 
 <div class="container">
@@ -132,7 +134,7 @@
     <h4>SideBet</h4>
     <hr />
     @{
-        var deadline = new DateTime(2024, 06, 14, 19, 00, 00);
+        var deadline = new DateTime(2024, 06, 14, 17, 00, 00);
         var disabled = DateTime.Now > deadline ? "disabled":"";
      }
     <div class="row">
