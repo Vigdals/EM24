@@ -11,7 +11,7 @@ namespace MatchBetting.ViewModels
         {
         }
 
-        public MatchBettingViewModel(Match match, string userId)
+        public MatchBettingViewModel(MatchViewModel match, string userId)
         {
             Id = match.Id;
             MatchId = match.MatchId;
