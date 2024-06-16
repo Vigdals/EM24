@@ -68,13 +68,11 @@ namespace MatchBetting.Controllers
 
             return View(matchViewModelList);
         }
-
         [Authorize]
         public IActionResult Rules()
         {
             return View();
         }
-
         [Authorize]
         public IActionResult LeaderBoard()
         {
@@ -93,7 +91,6 @@ namespace MatchBetting.Controllers
 
             return View(users);
         }
-
         [Authorize]
         public IActionResult Historikk()
         {

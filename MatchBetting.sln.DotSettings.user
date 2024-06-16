@@ -1,9 +1,0 @@
-﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
-	<s:Boolean x:Key="/Default/Housekeeping/Bookmarks/NumberedBookmarks/=Bookmark1/@KeyIndexDefined">True</s:Boolean>
-<<<<<<< HEAD
-	<s:String x:Key="/Default/Housekeeping/Bookmarks/NumberedBookmarks/=Bookmark1/Coords/@EntryValue">(Doc Ln 222 Col 9)</s:String>
-=======
-	<s:String x:Key="/Default/Housekeeping/Bookmarks/NumberedBookmarks/=Bookmark1/Coords/@EntryValue">(Doc Ln 207 Col 9)</s:String>
->>>>>>> f038352852131fd74438b8c32d4d45eb097f7224
-	<s:String x:Key="/Default/Housekeeping/Bookmarks/NumberedBookmarks/=Bookmark1/FileId/@EntryValue">8859D76A-A7DB-4762-A9BF-B98E26FF8CF0/d:Controllers/f:HomeController.cs</s:String>
-	<s:String x:Key="/Default/Housekeeping/Bookmarks/NumberedBookmarks/=Bookmark1/Owner/@EntryValue">NumberedBookmarkManager</s:String></wpf:ResourceDictionary>
