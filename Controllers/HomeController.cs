@@ -14,6 +14,7 @@ using MatchBetting.Service;
 using static MatchBetting.NifsModels.MatchModel;
 using Result = MatchBetting.NifsModels.Result;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace MatchBetting.Controllers
 {
@@ -120,6 +121,7 @@ namespace MatchBetting.Controllers
 
             var matches = _context.Matches
                 .Where(m => now >= m.Timestamp.AddHours(-2))
+                .OrderBy(o => o.Timestamp)
                 .ToList();
 
             return matches.Select(m => new MatchViewModel(m)).ToList();
@@ -134,6 +136,7 @@ namespace MatchBetting.Controllers
 
             var matches = _context.Matches
                 .Where(m => now >= m.Timestamp.AddHours(-2) && now <= m.Timestamp.Date.AddDays(1))
+                .OrderBy(o => o.Timestamp)
                 .ToList();
 
             return matches.Select(m => new MatchViewModel(m)).ToList();
