@@ -11,7 +11,6 @@ using System.Security.Claims;
 using MatchBetting.Data;
 using MatchBetting.Models;
 using MatchBetting.Service;
-using static MatchBetting.NifsModels.MatchModel;
 using Result = MatchBetting.NifsModels.Result;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -22,29 +21,32 @@ namespace MatchBetting.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly ILogService _logService;
+        private readonly INifsApiService _nifsApiService;
 
-        public HomeController(ApplicationDbContext context, ILogService logservice)
+        private readonly string TournamentID = "59";
+
+
+        public HomeController(ApplicationDbContext context, ILogService logservice, INifsApiService nifsApiService)
         {
             _context = context;
             _logService = logservice;
-
+            _nifsApiService = nifsApiService;
         }
+
+        #region ControllerActions
 
         [Authorize]
         public IActionResult Index()
         {
-            var tournamentID = "59";
-
             //Henter ut info om heile turneringa. Kvar gruppe har ein ID som treng eit api kall for å henta alle kampar
-            var TournamentViewModelList = GetTournamentInfo(tournamentID);
+            var TournamentViewModelList = _nifsApiService.GetTournamentInfo(TournamentID);
 
-            //Oppretta tom liste av kampar
             var matchViewModelList = new List<NifsKampViewModel>();
 
             //Går igjennom kvar gruppe og hentar ut alle kampar
             foreach (var tournamentViewModel in TournamentViewModelList)
             {
-                var matchModels = GetKampInfo("https://api.nifs.no/stages/" + tournamentViewModel.id + "/matches/");
+                var matchModels = _nifsApiService.GetKampInfo(tournamentViewModel.id);
 
                 //adding info just to display to the view
                 foreach (var match in matchModels.Result)
@@ -55,7 +57,6 @@ namespace MatchBetting.Controllers
 
                     Debug.WriteLine(tournamentViewModel.gruppenamn + match.homeTeam.name + " + " + match.awayTeam.name);
                 }
-                //return View(matchViewModelList);
             }
 
             try
@@ -69,15 +70,23 @@ namespace MatchBetting.Controllers
 
             return View(matchViewModelList);
         }
+
         [Authorize]
         public IActionResult Rules()
         {
             return View();
         }
+
         [Authorize]
-        public IActionResult LeaderBoard()
+        public async Task<IActionResult> LeaderBoard()
         {
             var currentMatches = GetMatchesWithinTimeRange();
+
+            foreach (var match in currentMatches)
+            {
+                var thematch = await _nifsApiService.FetchMatch(match.MatchId);
+                AddOrUpdateMatchInDatabase(thematch);
+            }
 
             var users = _context.Set<IdentityUser>().ToList()
                 .Select(user => new LeaderBoardByUserViewModel
@@ -90,8 +99,18 @@ namespace MatchBetting.Controllers
 
             ViewBag.CurrentMatches = currentMatches;
 
+            try
+            {
+                _context.SaveChangesAsync();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+
             return View(users);
         }
+
         [Authorize]
         public IActionResult Historikk()
         {
@@ -101,7 +120,7 @@ namespace MatchBetting.Controllers
                 .Select(user => new LeaderBoardByUserViewModel
                 {
                     UserId = user.Id,
-                    UserName = Euro2024Users.HentBrukernavn(user.Id),
+                    UserName = Euro2024Users.HentEtternavn(user.Id),
                     Score = CalculatePoints(user.Id),
                     CurrentBettings = GetCurrentUserCurrentBettings(user.Id, currentMatches)
                 }).ToList();
@@ -110,6 +129,10 @@ namespace MatchBetting.Controllers
 
             return View(users);
         }
+
+        #endregion
+
+        #region HelperMethods
 
         private List<MatchViewModel> GetAllMatchesUpToTimeRange()
         {
@@ -127,12 +150,12 @@ namespace MatchBetting.Controllers
             return matches.Select(m => new MatchViewModel(m)).ToList();
         }
 
-        public List<MatchViewModel> GetMatchesWithinTimeRange()
+        private List<MatchViewModel> GetMatchesWithinTimeRange()
         {
             var now = GetServerDateTimeNow();
 
             // Override for test
-            //now = DateTime.Now.Date.AddHours(-5);
+            //now = DateTime.Now.Date.AddHours(-3);
 
             var matches = _context.Matches
                 .Where(m => now >= m.Timestamp.AddHours(-2) && now <= m.Timestamp.Date.AddDays(1))
@@ -141,7 +164,6 @@ namespace MatchBetting.Controllers
 
             return matches.Select(m => new MatchViewModel(m)).ToList();
         }
-
 
         private List<MatchBettingViewModel> GetCurrentUserCurrentBettings(string userId, List<MatchViewModel> currentMatches)
         {
@@ -155,10 +177,7 @@ namespace MatchBetting.Controllers
             }
 
             return matchBettings;
-
-            //return currentMatches.Select(m => new MatchBettingViewModel(_context.MatchBettings.FirstOrDefault(mb => mb.UserId == userId && mb.MatchId == m.MatchId))).ToList();
         }
-
 
         private int CalculatePoints(string userId)
         {
@@ -185,9 +204,8 @@ namespace MatchBetting.Controllers
             var utcNow = DateTime.UtcNow;
             return TimeZoneInfo.ConvertTimeFromUtc(utcNow, osloTimeZone);
         }
-
-
-        private async void AddOrUpdateMatchInDatabase(NifsKampModel match)
+        
+        private void AddOrUpdateMatchInDatabase(NifsKampModel match)
         {
             try
             {
@@ -204,7 +222,11 @@ namespace MatchBetting.Controllers
                         Timestamp = match.timestamp,
                         HomeScore90 = match.result.homeScore90,
                         AwayScore90 = match.result.awayScore90,
-                        Result = GetResultFullTime(match.result)
+                        Result = GetResultFullTime(match.result),
+                        MatchStatusId = match.matchStatusId,
+                        MatchStatus = Euro2024MatchStatus.GetMatchStatusText(match.matchStatusId),
+                        HomeTeamLogoUrl = match.homeTeam?.logo?.url ?? "~/img/uefa_euro_2024_logo.svg.png",
+                        AwayTeamLogoUrl = match.awayTeam?.logo?.url ?? "~/img/uefa_euro_2024_logo.svg.png"
                     };
 
                     _context.Matches.Add(dbMatch);
@@ -217,6 +239,10 @@ namespace MatchBetting.Controllers
                     dbMatch.HomeScore90 = match.result.homeScore90;
                     dbMatch.AwayScore90 = match.result.awayScore90;
                     dbMatch.Result = GetResultFullTime(match.result);
+                    dbMatch.MatchStatusId = match.matchStatusId;
+                    dbMatch.MatchStatus = Euro2024MatchStatus.GetMatchStatusText(match.matchStatusId);
+                    dbMatch.HomeTeamLogoUrl = match.homeTeam?.logo?.url ?? "~/img/uefa_euro_2024_logo.svg.png";
+                    dbMatch.AwayTeamLogoUrl = match.awayTeam?.logo?.url ?? "~/img/uefa_euro_2024_logo.svg.png";
 
                     _context.Matches.Update(dbMatch);
                 }
@@ -244,49 +270,9 @@ namespace MatchBetting.Controllers
             }
         }
 
-        public List<TournamentViewModel> GetTournamentInfo(string tournamentID)
-        {
-            var tournamentModels = GetGruppeInfo("https://api.nifs.no/tournaments/" + tournamentID + "/stages/");
+        #endregion
 
-            var TournamentViewModelList = new List<TournamentViewModel>();
-
-            //adding info just to display to the view
-            foreach (var gruppe in tournamentModels.Result)
-            {
-                if (gruppe.yearStart == 2024)
-                {
-                    TournamentViewModelList.Add(new TournamentViewModel(gruppe));
-                }
-            }
-            return TournamentViewModelList;
-        }
-
-        public async Task<List<TournamentModel.Root>> GetGruppeInfo(string apiEndpoint)
-        {
-            var jsonResult = await ApiCall.DoApiCallAsync(apiEndpoint);
-
-            //The most sexy oneliner in the world!
-            //Takes the jsonResult, deserializes it and adds it to my model. Crazy easy
-            var tournamentModels = JsonSerializer.Deserialize<List<TournamentModel.Root>>(jsonResult);
-
-            return tournamentModels;
-        }
-
-        public async Task<List<NifsKampModel>> GetKampInfo(string apiEndpoint)
-        {
-            // string apiUrl = "https://api.nifs.no/stages/690256/matches/";
-            var jsonResult = await ApiCall.DoApiCallAsync(apiEndpoint);
-
-            //The most sexy oneliner in the world!
-            //Takes the jsonResult, deserializes it and adds it to my model. Crazy easy
-            var matchModel = JsonSerializer.Deserialize<List<NifsKampModel>>(jsonResult);
-
-            return matchModel;
-        }
-
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        /// Added by BTA
-        /// 
+        #region Apis
 
         [HttpPost]
         public async Task<IActionResult> UpdateStorage(int matchId, string result)
@@ -338,7 +324,6 @@ namespace MatchBetting.Controllers
         }
 
         [HttpPost]
-
         public async Task<IActionResult> UpdateSideBets(SideBettingMinViewModel sideBet)
         {
             if (sideBet.MostCards == null) sideBet.MostCards = string.Empty;
@@ -403,6 +388,21 @@ namespace MatchBetting.Controllers
             }
         }
 
+        public async Task<IActionResult> FetchMatch(int matchId)
+        {
+            try
+            {
+                var match = await _nifsApiService.FetchMatch(matchId);
+                return Json(match);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception or handle it as needed
+                Console.WriteLine($"An error occurred: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
         public IActionResult GetCurrentUserBettings()
         {
             try
@@ -421,6 +421,7 @@ namespace MatchBetting.Controllers
                 return Json(new { Success = false, Message = $"Failed to get bettings. Error: {ex.Message}" });
             }
         }
+
         public IActionResult GetCurrentUserSideBettings()
         {
             try
@@ -446,5 +447,7 @@ namespace MatchBetting.Controllers
                 return Json(new { Success = false, Message = $"Failed to get sidebettings. Error: {ex.Message}" });
             }
         }
+
+        #endregion
     }
 }

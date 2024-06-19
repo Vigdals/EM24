@@ -9,7 +9,7 @@
         { "5b94ed89-e8e8-409d-8144-69ab4ceb4c76", "Bernt A Elle" },
         { "68ac9525-e13f-4d60-8b04-22afacfe79d6", "Jo Bukve" },
         { "7ccede61-445c-4328-bd2d-597cb2b36375", "Bjørn Tore Årøy" },
-        { "81e706f3-652e-4174-888a-1346f5043212", "Ørjan Hesteun" },
+        { "81e706f3-652e-4174-888a-1346f5043212", "Ørjan Hestetun" },
         { "8c374c71-9dd2-482e-add9-09d7e305f0a7", "Frode Kvalsøren" },
         { "a3298f3b-4695-43e6-8d7c-b8d6648857e4", "Lars Jørgen Kjærvik" },
         { "b887c8b9-2246-41a3-8563-d65f35f6864a", "Thomas Ness" },
@@ -26,7 +26,43 @@
         }
         else
         {
-            return "Bruker ikke funnet";
+            return "Anonyme Anton";
         }
+    }
+
+    public static string HentKortBrukernavn(string brukerId)
+    {
+        var userName = HentBrukernavn(brukerId);
+        return GetTwoLetterByName(userName);
+    }
+
+    public static string HentEtternavn(string brukerId)
+    {
+        var userName = HentBrukernavn(brukerId);
+        return GetLastNameByName(userName);
+    }
+
+    private static string GetTwoLetterByName(string name)
+    {
+        string[] names = name.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        if (names.Length == 0)
+        {
+            return string.Empty; // Return an empty string if no names are provided
+        }
+
+        string firstNameInitial = names[0][0].ToString().ToUpper();
+        string lastNameInitial = names[^1][0].ToString().ToUpper(); // ^1 is the last element
+
+        return $"{firstNameInitial}{lastNameInitial}";
+    }
+    private static string GetLastNameByName(string name)
+    {
+        string[] names = name.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        if (names.Length == 0)
+        {
+            return string.Empty; // Return an empty string if no names are provided
+        }
+
+        return names[^1];
     }
 }

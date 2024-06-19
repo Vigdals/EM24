@@ -13,6 +13,8 @@ namespace MatchBetting.ViewModels
         public DateTime date { get; set; }
         public string gruppe { get; set; }
         public int id { get; set; }
+        public string HomeTeamLogoUrl { get; set; }
+        public string AwayTeamLogoUrl { get; set; }
 
         public NifsKampViewModel(NifsKampModel match, TournamentViewModel model)
         {
@@ -24,6 +26,8 @@ namespace MatchBetting.ViewModels
             date = match.timestamp;
             gruppe = model.gruppenamn;
             id = match.id;
+            HomeTeamLogoUrl = match.homeTeam?.logo?.url ?? "~/img/uefa_euro_2024_logo.svg.png";
+            AwayTeamLogoUrl = match.awayTeam?.logo?.url ?? "~/img/uefa_euro_2024_logo.svg.png";
         }
 
         public NifsKampViewModel(NifsKampModel match)
@@ -35,6 +39,8 @@ namespace MatchBetting.ViewModels
             round = match.round;
             date = match.timestamp;
             id = match.id;
+            HomeTeamLogoUrl = match.homeTeam?.logo?.url ?? "~/img/uefa_euro_2024_logo.svg.png";
+            AwayTeamLogoUrl = match.awayTeam?.logo?.url ?? "~/img/uefa_euro_2024_logo.svg.png";
         }
     }
     

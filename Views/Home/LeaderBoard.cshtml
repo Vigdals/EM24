@@ -22,7 +22,23 @@
                                 <th>P</th>
                                 @foreach (var match in currentMatches)
                                 {
-                                    <th title="@match.MatchId" style="text-align: center;">@match.HomeTeam<br />@match.AwayTeam<br/>@match.HomeScore90-@match.AwayScore90</th>
+                                    <th title="@match.MatchId" style="text-align: center;">
+                                        <img src="@match.HomeTeamLogoUrl" alt="Team Logo" width="16" height="16" id="HomeTeamLogo_@match.MatchId">@match.HomeTeam
+                                        <br />
+                                        <img src="@match.AwayTeamLogoUrl" alt="Team Logo" width="16" height="16" id="AwayTeamLogo_@match.MatchId">@match.AwayTeam
+                                        <br />
+                                        <span id="HomeScore90_@match.MatchId">@match.HomeScore90</span>
+                                        -
+                                        <span id="AwayScore90_@match.MatchId">@match.AwayScore90</span>
+                                    </th>
+@*                                     <script id="MatchScript_@match.MatchId">
+                                        $(function () {
+
+                                            var intervalId = setInterval(function () {
+                                                FetchMatch(@match.MatchId, intervalId);
+                                            }, 15000); 
+                                        });
+                                    </script> *@
                                 }
 
                             </tr>
@@ -53,3 +69,27 @@
         </div>
     </div>
 </div>
+<script>
+    function FetchMatch(matchId, intervalId) {
+        var shouldBeStopped = false;
+
+        $.ajax({
+            method: "GET",
+            url: `/Home/FetchMatch?matchId=${matchId}`,
+            dataType: 'json',
+            success: function (data) {
+                $(`#HomeScore90_${matchId}`).html(data.result.homeScore90);
+                $(`#AwayScore90_${matchId}`).html(data.result.awayScore90);
+
+                if (data.matchStatusId == 1) {
+                    clearInterval(intervalId);
+                    console.log("Match finished. Stopping interval")
+                }
+            },
+            error: function (error) {
+
+            }
+        });
+
+    }
+</script>

@@ -1,4 +1,5 @@
 ﻿using MatchBetting.Models;
+using MatchBetting.Utils;
 
 namespace MatchBetting.ViewModels
 {
@@ -12,6 +13,11 @@ namespace MatchBetting.ViewModels
         public int? AwayScore90 { get; set; }
         public string Result { get; set; }
         public DateTime Timestamp { get; set; }
+        public bool IsActive { get; set; }
+        public int MatchStatusId { get; set; }
+        public string MatchStatus { get; set; }
+        public string HomeTeamLogoUrl { get; set; }
+        public string AwayTeamLogoUrl { get; set; }
 
         public MatchViewModel(Match match)
         {
@@ -23,8 +29,11 @@ namespace MatchBetting.ViewModels
             AwayScore90 = match.AwayScore90;
             Result = match.Result;
             Timestamp = match.Timestamp;
+            MatchStatusId = match.MatchStatusId;
+            MatchStatus = Euro2024MatchStatus.GetMatchStatusText(match.MatchStatusId);
+            IsActive = Euro2024MatchStatus.MatchIsActive(match.MatchStatusId);
+            HomeTeamLogoUrl = match.HomeTeamLogoUrl;
+            AwayTeamLogoUrl = match.AwayTeamLogoUrl;
         }
-
-        
     }
 }

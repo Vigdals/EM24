@@ -44,11 +44,11 @@
                                     <tr>
                                         <td>@item.date.ToString("dd.MM HH:mm")</td>
                                         <td>@item.gruppe.Replace("gruppe ", "")</td>
-                                        <td>@item.homeTeam</td>
+                                        <td><img src="@item.HomeTeamLogoUrl" alt="Team Logo" width="16" height="16" id="HomeTeamLogo_@item.id">&nbsp;@item.homeTeam</td>
                                         <td class="center"><input type="checkbox" name="cb_@item.id" class="chb_@item.id" data-id="@item.id" value="H" @active /></td>
                                         <td class="center"><input type="checkbox" name="cb_@item.id" class="chb_@item.id" data-id="@item.id" value="U" @active /></td>
                                         <td class="center"><input type="checkbox" name="cb_@item.id" class="chb_@item.id" data-id="@item.id" value="B" @active /></td>
-                                        <td>@item.awayTeam</td>
+                                        <td><img src="@item.AwayTeamLogoUrl" alt="Team Logo" width="16" height="16" id="AwayTeamLogo_@item.id">&nbsp;@item.awayTeam</td>
                                     </tr>
                                     <script>
                                         $(function () {

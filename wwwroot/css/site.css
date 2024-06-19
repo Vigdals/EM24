@@ -64,3 +64,7 @@ body {
     .table .fade-green.removed, input.form-control.input_sidebet.fade-green.removed {
         background-color: transparent;
     }
+
+.table th, .table td {
+    padding: 1px;
+}

@@ -14,5 +14,9 @@ namespace MatchBetting.Models
         public int? AwayScore90 { get; set; }
         public string Result { get; set; }
         public DateTime Timestamp { get; set; }
+        public int MatchStatusId { get; set; }
+        public string MatchStatus { get; set; }
+        public string HomeTeamLogoUrl { get; set; }
+        public string AwayTeamLogoUrl { get;set; }
     }
 }

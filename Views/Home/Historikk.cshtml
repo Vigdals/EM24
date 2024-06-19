@@ -7,22 +7,26 @@
 
 <div class="container">
     <div class="row">
-        <div class="col-md-2 text-center">
+        <div class="col-md-12 text-center mb-3">
             <img src="~/img/uefa_euro_2024_logo.svg.png" alt="UEFA EURO 2024 Logo" class="img-fluid" style="max-width: 100px; height: auto;" />
         </div>
         <!-- Table Column -->
-        <div class="col-md-6">
+        <div class="col-md-12">
             @if (Model != null)
             {
                 <div class="table-responsive">
                     <table class="table table-striped table-hover table-bordered">
                         <thead>
                             <tr>
-                                <th>Deltakar</th>
-                                <th>P</th>
+                                <th>&nbsp;</th>
+                                <th style="text-align: center;">&nbsp;P&nbsp;</th>
                                 @foreach (var match in currentMatches)
                                 {
-                                    <th title="@match.MatchId" style="text-align: center;">@match.HomeTeam<br />@match.AwayTeam<br />@match.HomeScore90-@match.AwayScore90</th>
+                                    <th title="@match.MatchId" style="text-align: center;">
+                                        <img src="@match.HomeTeamLogoUrl" alt="Team Logo" width="16" height="16" id="HomeTeamLogo_@match.MatchId">&nbsp;@match.HomeTeam
+                                        <br /><img src="@match.AwayTeamLogoUrl" alt="Team Logo" width="16" height="16" id="AwayTeamLogo_@match.MatchId">&nbsp;@match.AwayTeam
+                                        <br />@match.HomeScore90-@match.AwayScore90
+                                    </th>
                                 }
 
                             </tr>
@@ -31,8 +35,8 @@
                             @foreach (var user in Model.OrderByDescending(o => o.Score))
                             {
                                 <tr>
-                                    <td>@user.UserName</td>
-                                    <td>@user.Score</td>
+                                    <td class="fw-bold pl-1 pr-1">@user.UserName</td>
+                                    <td class="fw-bold pl-1 pr-1" style="text-align: center;">@user.Score</td>
                                     @foreach (var betting in user.CurrentBettings)
                                     {
                                         var match = currentMatches.FirstOrDefault(cm => cm.MatchId == betting.MatchId);
@@ -48,7 +52,7 @@
             }
         </div>
         <!-- Right Logo Column -->
-        <div class="col-md-2 text-center">
+        <div class="col-md-12 text-center">
             <img src="~/img/uefa_euro_2024_logo.svg.png" alt="UEFA EURO 2024 Logo" class="img-fluid" style="max-width: 100px; height: auto;" />
         </div>
     </div>

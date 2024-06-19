@@ -64,7 +64,7 @@ namespace MatchBetting.NifsModels
         public int imageTypeId { get; set; }
         public string type { get; set; }
         public string uid { get; set; }
-        public int id { get; set; }
+        public int? id { get; set; }
     }
 
     public class Club

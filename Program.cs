@@ -20,6 +20,8 @@ builder.Services.AddRazorPages();
 
 // Register the ILogService with its implementation
 builder.Services.AddScoped<ILogService, LogService>();
+builder.Services.AddScoped<INifsApiService, NifsApiService>();
+
 
 var app = builder.Build();
 
