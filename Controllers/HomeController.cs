@@ -140,6 +140,7 @@ namespace MatchBetting.Controllers
                 {
                     UserId = user.Id,
                     UserName = Euro2024Users.HentBrukernavn(user.Id),
+                    //The line below is not working. Im getting a json result but im trying to add that to a viewmodel
                     CurrentSideBettings = (List<SideBettingViewModel>)GetAllUsersSideBettings(user.Id)
                 }).ToList();
 
