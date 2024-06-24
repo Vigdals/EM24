@@ -19,7 +19,7 @@
         <div class="col-md-6">
             @if (Model != null)
             {
-                @foreach (var round in rounds.Where(r => r is > 1 and < 4))
+                @foreach (var round in rounds.Where(r => r is > 2 and < 4))
                 {
                     <h3>Runde @round</h3>
                     <div class="table-responsive">
