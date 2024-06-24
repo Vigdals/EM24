@@ -25,4 +25,11 @@ namespace MatchBetting.ViewModels
 
         public string MostCards { get; set; }
     }
+    public class AllSideBettingsViewModel
+    {
+        public string UserId { get; set; }
+        public string UserName { get; set; }
+        public List<SideBettingViewModel> CurrentSideBettings { get; set; }
+
+    }
 }

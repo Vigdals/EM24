@@ -1,0 +1,26 @@
+﻿@using MatchBetting.ViewModels
+@model List<global::MatchBetting.ViewModels.AllSideBettingsViewModel>?
+
+<h2>Side Bets</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>UserName</th>
+            <th>Toppscorer</th>
+            <th>Winner Team</th>
+            <th>Most Cards</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.UserName</td>
+                <td>@item.CurrentSideBettings</td>
+                <td>@item.CurrentSideBettings</td>
+                <td>@item.CurrentSideBettings</td>
+            </tr>
+        }
+    </tbody>
+</table>

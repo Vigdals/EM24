@@ -130,6 +130,22 @@ namespace MatchBetting.Controllers
             return View(users);
         }
 
+        [Authorize]
+        public IActionResult SideBets()
+        {
+            //var CurrentSideBets = GetAllUsersSideBettings();
+
+            var users = _context.Set<IdentityUser>().ToList()
+                .Select(user => new AllSideBettingsViewModel
+                {
+                    UserId = user.Id,
+                    UserName = Euro2024Users.HentBrukernavn(user.Id),
+                    CurrentSideBettings = (List<SideBettingViewModel>)GetAllUsersSideBettings(user.Id)
+                }).ToList();
+
+            return View(users);
+        }
+
         #endregion
 
         #region HelperMethods
@@ -423,6 +439,32 @@ namespace MatchBetting.Controllers
         }
 
         public IActionResult GetCurrentUserSideBettings()
+        {
+            try
+            {
+                // Get the logged-in user's ID
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                // Create a new MatchBetting entity
+
+                var sideBettings = _context.SideBettings.FirstOrDefault(m => m.UserId == userId);
+                if (sideBettings == null)
+                {
+                    sideBettings = new SideBet();
+                    sideBettings.UserId = userId;
+                }
+                var sideBet = new SideBettingViewModel(sideBettings);
+
+                return Json(new { Success = true, SideBettings = sideBet });
+            }
+            catch (Exception ex)
+            {
+                // Log the exception if needed
+                return Json(new { Success = false, Message = $"Failed to get sidebettings. Error: {ex.Message}" });
+            }
+        }
+
+        public IActionResult GetAllUsersSideBettings(string UserId)
         {
             try
             {
