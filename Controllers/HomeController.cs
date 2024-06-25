@@ -140,8 +140,7 @@ namespace MatchBetting.Controllers
                 {
                     UserId = user.Id,
                     UserName = Euro2024Users.HentBrukernavn(user.Id),
-                    //The line below is not working. Im getting a json result but im trying to add that to a viewmodel
-                    CurrentSideBettings = (List<SideBettingViewModel>)GetAllUsersSideBettings(user.Id)
+                    CurrentSideBettings = GetAllUsersSideBettings(user.Id)
                 }).ToList();
 
             return View(users);
@@ -465,31 +464,54 @@ namespace MatchBetting.Controllers
             }
         }
 
-        public IActionResult GetAllUsersSideBettings(string UserId)
+        public List<SideBettingViewModel> GetAllUsersSideBettings(string userId)
         {
             try
             {
-                // Get the logged-in user's ID
-                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-                // Create a new MatchBetting entity
-
                 var sideBettings = _context.SideBettings.FirstOrDefault(m => m.UserId == userId);
-                if (sideBettings == null)
+                if (sideBettings != null)
                 {
-                    sideBettings = new SideBet();
-                    sideBettings.UserId = userId;
+                    var sideBet = new SideBettingViewModel(sideBettings);
+                    return new List<SideBettingViewModel> { sideBet };
                 }
-                var sideBet = new SideBettingViewModel(sideBettings);
-
-                return Json(new { Success = true, SideBettings = sideBet });
+                else
+                {
+                    return new List<SideBettingViewModel>();
+                }
             }
             catch (Exception ex)
             {
                 // Log the exception if needed
-                return Json(new { Success = false, Message = $"Failed to get sidebettings. Error: {ex.Message}" });
+                return new List<SideBettingViewModel>(); // Return an empty list in case of an error
             }
         }
+
+
+        //public IActionResult GetAllUsersSideBettings(string UserId)
+        //{
+        //    try
+        //    {
+        //        // Get the logged-in user's ID
+        //        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        //        // Create a new MatchBetting entity
+
+        //        var sideBettings = _context.SideBettings.FirstOrDefault(m => m.UserId == userId);
+        //        if (sideBettings == null)
+        //        {
+        //            sideBettings = new SideBet();
+        //            sideBettings.UserId = userId;
+        //        }
+        //        var sideBet = new SideBettingViewModel(sideBettings);
+
+        //        return Json(new { Success = true, SideBettings = sideBet });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        // Log the exception if needed
+        //        return Json(new { Success = false, Message = $"Failed to get sidebettings. Error: {ex.Message}" });
+        //    }
+        //}
 
         #endregion
     }

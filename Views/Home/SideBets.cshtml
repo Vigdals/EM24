@@ -1,26 +1,46 @@
 ﻿@using MatchBetting.ViewModels
 @model List<global::MatchBetting.ViewModels.AllSideBettingsViewModel>?
 
-<h2>Side Bets</h2>
-
-<table class="table">
-    <thead>
-        <tr>
-            <th>UserName</th>
-            <th>Toppscorer</th>
-            <th>Winner Team</th>
-            <th>Most Cards</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@item.UserName</td>
-                <td>@item.CurrentSideBettings</td>
-                <td>@item.CurrentSideBettings</td>
-                <td>@item.CurrentSideBettings</td>
-            </tr>
-        }
-    </tbody>
-</table>
+@{
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+<div class="container">
+    <div class="row">
+        <!-- Top Logo Column -->
+        <div class="col-md-12 text-center mb-3">
+            <img src="~/img/uefa_euro_2024_logo.svg.png" alt="UEFA EURO 2024 Logo" class="img-fluid" style="max-width: 100px; height: auto;" />
+        </div>
+        <!-- Table Column -->
+        <div class="col-md-12">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Deltakar</th>
+                        <th>Toppscorar</th>
+                        <th>Vinnarlag</th>
+                        <th>Mest kort</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in Model.OrderBy(u => u.UserName)) // Sort by UserName here
+                    {
+                        var sideBet = user.CurrentSideBettings.FirstOrDefault(); // Get the first (and possibly only) SideBettingViewModel
+                        if (sideBet != null)
+                        {
+                            <tr>
+                                <td>@user.UserName</td>
+                                <td>@sideBet.Toppscorer.ToUpper()</td> <!-- Capitalize Toppscorer -->
+                                <td>@sideBet.WinnerTeam.ToUpper()</td> <!-- Capitalize WinnerTeam -->
+                                <td>@sideBet.MostCards.ToUpper()</td> <!-- Capitalize MostCards -->
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+        <!-- Bottom Logo Column -->
+        <div class="col-md-12 text-center">
+            <img src="~/img/uefa_euro_2024_logo.svg.png" alt="UEFA EURO 2024 Logo" class="img-fluid" style="max-width: 100px; height: auto;" />
+        </div>
+    </div>
+</div>
