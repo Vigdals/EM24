@@ -143,6 +143,14 @@ namespace MatchBetting.Controllers
                     CurrentSideBettings = GetAllUsersSideBettings(user.Id)
                 }).ToList();
 
+            //Fetch cards and goals for side bets
+            foreach (var user in users)
+            {
+                //Gets player id and fetches goals and cards in Euros 2024 tournament
+                var playerId = "191333";
+                GetGoalsAndCardsforPlayer(playerId);
+            }
+
             return View(users);
         }
 
@@ -486,7 +494,7 @@ namespace MatchBetting.Controllers
             }
         }
 
-
+        //Old code from BTO
         //public IActionResult GetAllUsersSideBettings(string UserId)
         //{
         //    try
@@ -512,6 +520,13 @@ namespace MatchBetting.Controllers
         //        return Json(new { Success = false, Message = $"Failed to get sidebettings. Error: {ex.Message}" });
         //    }
         //}
+        public IActionResult GetGoalsAndCardsforPlayer(string playerId)
+        {
+            
+            
+            
+            return View();
+        }
 
         #endregion
     }
